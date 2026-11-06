@@ -1,0 +1,56 @@
+<app-gradient-shell>
+  <section class="card" aria-labelledby="download-title" aria-live="polite">
+    <h1 id="download-title" class="card__title">Télécharger un fichier</h1>
+
+    @let s = state();
+    @if (s.kind === 'loading') {
+      <p class="field__help" role="status">Chargement du fichier…</p>
+    } @else if (s.kind === 'unavailable') {
+      <p class="notice notice--danger" role="alert">
+        <app-icon name="alert" [size]="16" />
+        <span>{{ s.message }}</span>
+      </p>
+    } @else {
+      <div class="file-line">
+        <app-icon name="file" [size]="22" />
+        <div class="file-line__text">
+          <div class="file-line__name" [title]="s.info.originalName">{{ s.info.originalName }}</div>
+          <div class="file-line__meta">{{ formatSize(s.info.sizeBytes) }}</div>
+        </div>
+      </div>
+
+      <p class="notice" [class.notice--info]="!soon(s.info)" [class.notice--warn]="soon(s.info)">
+        <app-icon [name]="soon(s.info) ? 'alert' : 'info'" [size]="16" />
+        <span>{{ expiry(s.info) }}</span>
+      </p>
+
+      @if (error()) {
+        <p class="notice notice--danger" role="alert">{{ error() }}</p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="download(s.info)" novalidate>
+        @if (s.info.passwordProtected) {
+          <div class="field">
+            <label for="download-password">Mot de passe</label>
+            <input id="download-password" type="password" formControlName="password"
+                   autocomplete="off" placeholder="Saisissez le mot de passe..."
+                   aria-describedby="download-password-help" />
+            <span id="download-password-help" class="field__help">Ce fichier est protégé par son expéditeur.</span>
+          </div>
+        }
+
+        <button type="submit" class="btn btn--soft btn--block"
+                [disabled]="pending() || (s.info.passwordProtected && form.invalid)">
+          <app-icon name="download" [size]="16" />
+          {{ pending() ? 'Vérification…' : 'Télécharger' }}
+        </button>
+      </form>
+
+      @if (started()) {
+        <p class="field__help download__started" role="status">
+          Le téléchargement a démarré. Tu le retrouveras dans les téléchargements de ton navigateur.
+        </p>
+      }
+    }
+  </section>
+</app-gradient-shell>
