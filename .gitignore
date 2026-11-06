@@ -1,0 +1,16 @@
+# Java / Maven
+backend/target/
+/backend/storage/
+*.log
+
+# IDE
+.idea/
+/.vscode/
+*.iml
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Fichiers téléversés en local
+/storage/
