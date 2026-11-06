@@ -1,0 +1,300 @@
+/*
+ * DataShare — styles globaux.
+ * Les valeurs viennent des maquettes Figma (dégradé pêche → corail, cartes blanches, accent orange).
+ */
+:root {
+  --grad-top: #fdb98c;
+  --grad-bottom: #e0625f;
+  --gradient: linear-gradient(180deg, var(--grad-top) 0%, var(--grad-bottom) 100%);
+
+  --ink: #1d1b1c;
+  --ink-soft: #5c5658;
+  --ink-muted: #6f696b;
+  --pill: #2e2c2e;
+  --white: #ffffff;
+  --cream: #fff8f3;
+  --line: #ece4df;
+  --field: #fcfcfc;
+
+  --accent: #b4511b;          // maquette #e9844a assombri pour un contraste AA (4,6:1)
+  --accent-soft: #fff1e6;     // fond des boutons secondaires
+  --accent-line: #f2b88f;     // bordure des boutons secondaires
+  --tab-active: #e57b68;
+
+  --info-bg: #e9f0fc;
+  --info-ink: #3d63a8;
+  --warn-bg: #fff0e2;
+  --warn-ink: #a8541a;
+  --danger-bg: #fde8e7;
+  --danger-ink: #b23535;
+
+  --radius-card: 14px;
+  --radius-field: 8px;
+  --radius-pill: 8px;
+  --shadow-card: 0 12px 32px rgba(120, 40, 20, 0.16);
+
+  --font: 'DM Sans Variable', 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--grad-bottom);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--accent);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid #1f5fd1;
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Carte blanche centrée (connexion, téléversement, téléchargement) ---- */
+.card {
+  width: min(100%, 420px);
+  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 28px 24px 24px;
+}
+
+.card__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ---- Champs de formulaire ---- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 0.95rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  background: var(--field);
+  font-size: 0.95rem;
+}
+
+.field input::placeholder {
+  color: #b3adaf;
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--danger-ink);
+}
+
+.field__error {
+  color: var(--danger-ink);
+  font-size: 0.85rem;
+}
+
+/* ---- Boutons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+.btn--soft {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.btn--soft:hover:not(:disabled) {
+  background: #ffe6d3;
+}
+
+.btn--soft:disabled {
+  background: #f1efee;
+  border-color: #e4e0de;
+  color: #a39c9e;
+}
+
+.btn--dark {
+  background: var(--pill);
+  color: var(--white);
+}
+
+.btn--dark:hover {
+  background: #000;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--sm {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+/* ---- Messages contextuels ---- */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.notice--info {
+  background: var(--info-bg);
+  color: var(--info-ink);
+}
+
+.notice--warn {
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+}
+
+.notice--danger {
+  background: var(--danger-bg);
+  color: var(--danger-ink);
+}
+
+/* ---- Ligne « fichier » (icône, nom, taille) ---- */
+.file-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.file-line__text {
+  min-width: 0;
+  flex: 1;
+}
+
+.file-line__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-line__meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.field__help {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.card__alt {
+  text-align: center;
+  font-size: 0.9rem;
+  margin: 4px 0 16px;
+}
+
+.download__started {
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+.btn--danger {
+  background: var(--danger-ink);
+  color: var(--white);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: #8f2626;
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -40px;
+  z-index: 100;
+  padding: 8px 12px;
+  background: var(--white);
+  color: var(--ink);
+  border-radius: 6px;
+}
+
+.skip-link:focus {
+  top: 8px;
+}

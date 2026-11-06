@@ -1,0 +1,50 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--gradient);
+}
+
+.shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+.shell__logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.shell__main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.shell__footer {
+  padding: 16px 24px;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+/* Sur mobile, les cartes remontent du bas de l'écran comme dans les maquettes iPhone. */
+@media (max-width: 600px) {
+  .shell__header {
+    padding: 16px;
+  }
+
+  .shell__logo {
+    font-size: 1.3rem;
+  }
+
+  .shell__main {
+    padding: 16px 12px;
+  }
+}
