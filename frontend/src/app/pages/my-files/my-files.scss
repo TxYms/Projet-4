@@ -1,0 +1,283 @@
+:host {
+  display: block;
+}
+
+.space {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100dvh;
+  background: var(--cream);
+}
+
+.space__side {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px 16px;
+  background: var(--gradient);
+}
+
+.space__side-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.space__logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.space__close,
+.space__burger {
+  display: none;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  padding: 4px;
+  cursor: pointer;
+}
+
+.space__nav-item {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.space__copyright {
+  margin: auto 0 0;
+  font-size: 0.85rem;
+}
+
+.space__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.space__bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.space__user {
+  margin-right: auto;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.space__content {
+  padding: 28px 24px 48px;
+  max-width: 960px;
+  width: 100%;
+}
+
+.space__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.tabs {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 8px;
+  background: #fde9dc;
+  margin-bottom: 20px;
+}
+
+.tabs__tab {
+  border: none;
+  background: transparent;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tabs__tab--active {
+  background: var(--tab-active);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+}
+
+.file-row--expired {
+  background: #fdf6f2;
+}
+
+.file-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.file-row__name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-row__meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.file-row__meta--expired {
+  color: var(--danger-ink);
+}
+
+.file-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-row__lock {
+  display: inline-flex;
+  color: var(--ink-soft);
+}
+
+.file-row__gone {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  text-align: right;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px 0;
+  color: var(--ink-soft);
+}
+
+.empty p {
+  margin: 0;
+}
+
+.dialog {
+  border: none;
+  border-radius: var(--radius-card);
+  padding: 24px;
+  width: min(92vw, 420px);
+  box-shadow: var(--shadow-card);
+}
+
+.dialog::backdrop {
+  background: rgba(29, 27, 28, 0.45);
+}
+
+.dialog__title {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.space__backdrop {
+  display: none;
+}
+
+/* Maquettes iPhone : le menu latéral devient un tiroir */
+@media (max-width: 800px) {
+  .space {
+    grid-template-columns: 1fr;
+  }
+
+  .space__side {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(80vw, 300px);
+    z-index: 20;
+    transform: translateX(-100%);
+    visibility: hidden; /* retire aussi les liens du parcours clavier quand le tiroir est fermé */
+    transition: transform 0.2s ease, visibility 0.2s;
+  }
+
+  .space__side--open {
+    transform: none;
+    visibility: visible;
+  }
+
+  .space__close,
+  .space__burger {
+    display: inline-flex;
+  }
+
+  .space__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(29, 27, 28, 0.4);
+  }
+
+  .space__bar {
+    padding: 10px 12px;
+    gap: 4px;
+  }
+
+  .space__user {
+    display: none;
+  }
+
+  .space__burger {
+    margin-right: auto;
+  }
+
+  .space__content {
+    padding: 20px 12px 40px;
+  }
+
+  .file-row {
+    flex-wrap: wrap;
+  }
+
+  .file-row__actions,
+  .file-row__gone {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

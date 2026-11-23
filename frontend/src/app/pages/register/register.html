@@ -1,0 +1,53 @@
+<app-gradient-shell>
+  <section class="card" aria-labelledby="register-title">
+    <h1 id="register-title" class="card__title">Créer un compte</h1>
+
+    @if (error()) {
+      <p class="notice notice--danger" role="alert">{{ error() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="register-email">Email</label>
+        <input id="register-email" type="email" formControlName="email" autocomplete="email"
+               placeholder="Saisissez votre email"
+               [attr.aria-invalid]="show('email') && form.controls.email.invalid"
+               aria-describedby="register-email-error" />
+        @if (show('email') && form.controls.email.invalid) {
+          <span id="register-email-error" class="field__error">Saisis une adresse e-mail valide.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="register-password">Mot de passe</label>
+        <input id="register-password" type="password" formControlName="password" autocomplete="new-password"
+               placeholder="Saisissez votre mot de passe"
+               [attr.aria-invalid]="show('password') && form.controls.password.invalid"
+               aria-describedby="register-password-help" />
+        <span id="register-password-help"
+              [class]="show('password') && form.controls.password.invalid ? 'field__error' : 'field__help'">
+          {{ minLength }} caractères minimum.
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="register-confirm">Vérification du mot de passe</label>
+        <input id="register-confirm" type="password" formControlName="confirm" autocomplete="new-password"
+               placeholder="Saisissez-le à nouveau"
+               [attr.aria-invalid]="mismatch() || (show('confirm') && form.controls.confirm.invalid)"
+               aria-describedby="register-confirm-error" />
+        @if (mismatch()) {
+          <span id="register-confirm-error" class="field__error">Les deux mots de passe ne sont pas identiques.</span>
+        } @else if (show('confirm') && form.controls.confirm.invalid) {
+          <span id="register-confirm-error" class="field__error">Saisis à nouveau ton mot de passe.</span>
+        }
+      </div>
+
+      <p class="card__alt"><a routerLink="/connexion">J'ai déjà un compte</a></p>
+
+      <button type="submit" class="btn btn--soft btn--block" [disabled]="pending()">
+        {{ pending() ? 'Création…' : 'Créer mon compte' }}
+      </button>
+    </form>
+  </section>
+</app-gradient-shell>

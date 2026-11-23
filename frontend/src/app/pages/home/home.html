@@ -1,0 +1,109 @@
+<app-gradient-shell>
+  <input #picker type="file" class="visually-hidden" tabindex="-1" aria-hidden="true" (change)="onPicked($event)" />
+
+  @switch (step()) {
+    @case ('idle') {
+      <section class="hero" [class.hero--drag]="dragging()"
+               (dragover)="onDragOver($event)" (dragleave)="dragging.set(false)" (drop)="onDrop($event)">
+        <h1 class="hero__title">Tu veux partager un fichier ?</h1>
+        <button type="button" class="hero__button" (click)="choose()" aria-label="Choisir un fichier à partager">
+          <app-icon name="cloud" [size]="30" [stroke]="2" />
+        </button>
+        <p class="hero__hint">Jusqu'à 1 Go, conservé une semaine au maximum.</p>
+      </section>
+    }
+
+    @case ('done') {
+      @if (result(); as res) {
+        <section class="card sheet" aria-labelledby="upload-title">
+          <h1 id="upload-title" class="card__title">Ajouter un fichier</h1>
+          <div class="file-line">
+            <app-icon name="file" [size]="22" />
+            <div class="file-line__text">
+              <div class="file-line__name">{{ res.originalName }}</div>
+              <div class="file-line__meta">{{ formatSize(res.sizeBytes) }}</div>
+            </div>
+          </div>
+          <p role="status">Félicitations, ton fichier sera conservé chez nous pendant {{ keptFor() }} !</p>
+          <a class="link-box" [href]="res.downloadUrl" target="_blank" rel="noopener">{{ res.downloadUrl }}</a>
+          @if (error()) {
+            <p class="notice notice--danger" role="alert">{{ error() }}</p>
+          }
+          <div class="sheet__actions">
+            <button type="button" class="btn btn--soft" (click)="copy(res.downloadUrl)">
+              <app-icon [name]="copied() ? 'check' : 'copy'" [size]="16" />
+              {{ copied() ? 'Lien copié' : 'Copier le lien' }}
+            </button>
+            <button type="button" class="btn btn--ghost" (click)="restart()">Envoyer un autre fichier</button>
+          </div>
+        </section>
+      }
+    }
+
+    @default {
+      <section class="card sheet" aria-labelledby="upload-title">
+        <h1 id="upload-title" class="card__title">Ajouter un fichier</h1>
+
+        @if (file(); as f) {
+          <div class="file-line">
+            <app-icon name="file" [size]="22" />
+            <div class="file-line__text">
+              <div class="file-line__name" [title]="f.name">{{ f.name }}</div>
+              <div class="file-line__meta">{{ formatSize(f.size) }}</div>
+              @if (fileProblem()) {
+                <div class="field__error" role="alert">{{ fileProblem() }}</div>
+              }
+            </div>
+            <button type="button" class="btn btn--soft btn--sm" (click)="change()"
+                    [disabled]="step() === 'uploading'">Changer</button>
+          </div>
+        }
+
+        @if (error()) {
+          <p class="notice notice--danger" role="alert">{{ error() }}</p>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <fieldset class="sheet__fields" [disabled]="step() === 'uploading'">
+            <div class="field">
+              <label for="upload-password">Mot de passe</label>
+              <input id="upload-password" type="password" formControlName="password" autocomplete="new-password"
+                     placeholder="Optionnel" [attr.aria-invalid]="passwordInvalid()"
+                     aria-describedby="upload-password-help" />
+              <span id="upload-password-help" [class]="passwordInvalid() ? 'field__error' : 'field__help'">
+                Si tu en mets un, {{ minPassword }} caractères minimum. Il sera demandé au téléchargement.
+              </span>
+            </div>
+
+            <div class="field">
+              <label for="upload-expiration">Expiration</label>
+              <select id="upload-expiration" formControlName="expirationDays">
+                @for (option of options; track option.days) {
+                  <option [ngValue]="option.days">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </fieldset>
+
+          @if (step() === 'uploading') {
+            <div class="progress" role="progressbar" aria-label="Téléversement en cours"
+                 aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progress()">
+              <div class="progress__bar" [style.width.%]="progress()"></div>
+            </div>
+            <div class="sheet__actions">
+              <span class="progress__label">Téléversement… {{ progress() }} %</span>
+              <button type="button" class="btn btn--ghost" (click)="cancel()">Annuler</button>
+            </div>
+          } @else {
+            <div class="sheet__actions sheet__actions--center">
+              <button type="submit" class="btn btn--soft" [disabled]="!!fileProblem()">
+                <app-icon name="upload" [size]="16" />
+                Téléverser
+              </button>
+            </div>
+          }
+        </form>
+      </section>
+    }
+  }
+</app-gradient-shell>

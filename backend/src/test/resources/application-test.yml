@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:datashare;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+datashare:
+  storage:
+    root-dir: ${java.io.tmpdir}/datashare-test-storage
+  purge:
+    # Désactive l'exécution planifiée pendant les tests : la purge est appelée explicitement
+    cron: "-"
+logging:
+  level:
+    root: WARN

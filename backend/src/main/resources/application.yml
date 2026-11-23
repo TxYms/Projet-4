@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: datashare-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/datashare}
+    username: ${DB_USER:datashare}
+    password: ${DB_PASSWORD:datashare}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      # US01 : taille maximale 1 Go. La requête multipart contient aussi les champs du formulaire.
+      max-file-size: 1GB
+      max-request-size: 1025MB
+      # Les fichiers sont écrits sur disque dès réception : rien n'est chargé en mémoire.
+      file-size-threshold: 0
+
+server:
+  port: ${PORT:8080}
+  tomcat:
+    # Laisse Tomcat lire le corps des gros uploads au lieu de couper la connexion
+    max-swallow-size: -1
+  error:
+    include-stacktrace: never
+
+datashare:
+  public-url: ${PUBLIC_URL:http://localhost:4200}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+  jwt:
+    # Secret HMAC encodé en Base64, au moins 32 octets. À fournir par variable d'environnement en production.
+    secret: ${JWT_SECRET:ZGV2LW9ubHktc2VjcmV0LWNoYW5nZS1tZS1iZWZvcmUtcHJvZHVjdGlvbiE=}
+    access-token-ttl: 1h
+    download-ticket-ttl: 5m
+  storage:
+    root-dir: ${STORAGE_DIR:./storage}
+  files:
+    default-expiration-days: 7
+    max-expiration-days: 7
+    forbidden-extensions: exe,bat,cmd,com,msi,scr,ps1,vbs,jar,sh,dll
+  purge:
+    # Tous les jours à 3 h du matin
+    cron: "0 0 3 * * *"
+    # Les métadonnées des fichiers expirés restent visibles dans l'historique pendant ce délai
+    metadata-retention: 30d
+
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /api/docs/ui
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

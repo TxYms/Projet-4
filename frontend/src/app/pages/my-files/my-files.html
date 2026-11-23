@@ -1,0 +1,118 @@
+<div class="space">
+  <aside class="space__side" [class.space__side--open]="menuOpen()" id="space-menu">
+    <div class="space__side-top">
+      <a routerLink="/" class="space__logo">DataShare</a>
+      <button type="button" class="space__close" (click)="menuOpen.set(false)" aria-label="Fermer le menu">
+        <app-icon name="close" [size]="22" />
+      </button>
+    </div>
+    <nav aria-label="Mon espace">
+      <a routerLink="/mon-espace" class="space__nav-item" aria-current="page">Mes fichiers</a>
+    </nav>
+    <p class="space__copyright">Copyright DataShare® 2025</p>
+  </aside>
+
+  <div class="space__main">
+    <header class="space__bar">
+      <button type="button" class="space__burger" (click)="menuOpen.set(true)"
+              aria-controls="space-menu" [attr.aria-expanded]="menuOpen()" aria-label="Ouvrir le menu">
+        <app-icon name="menu" [size]="22" />
+      </button>
+      <span class="space__user">{{ auth.user()?.email }}</span>
+      <a routerLink="/" class="btn btn--dark btn--sm">Ajouter des fichiers</a>
+      <button type="button" class="btn btn--ghost btn--sm" (click)="auth.logout()">
+        <app-icon name="logout" [size]="16" />
+        Déconnexion
+      </button>
+    </header>
+
+    <main class="space__content" id="contenu">
+      <h1 class="space__title">Mes fichiers</h1>
+
+      <div class="tabs" role="group" aria-label="Filtrer les fichiers">
+        @for (f of filters; track f.value) {
+          <button type="button" class="tabs__tab" [class.tabs__tab--active]="filter() === f.value"
+                  [attr.aria-pressed]="filter() === f.value" (click)="select(f.value)">{{ f.label }}</button>
+        }
+      </div>
+
+      @if (message()) {
+        <p class="notice notice--info" role="status">{{ message() }}</p>
+      }
+      @if (error()) {
+        <p class="notice notice--danger" role="alert">{{ error() }}</p>
+      }
+
+      @if (loading()) {
+        <p class="field__help" role="status">Chargement de tes fichiers…</p>
+      } @else if (files().length === 0) {
+        <div class="empty">
+          @if (filter() === 'ALL') {
+            <p>Tu n'as encore envoyé aucun fichier.</p>
+            <a routerLink="/" class="btn btn--soft">
+              <app-icon name="upload" [size]="16" />
+              Téléverser un fichier
+            </a>
+          } @else if (filter() === 'ACTIVE') {
+            <p>Aucun fichier en cours de partage.</p>
+          } @else {
+            <p>Aucun fichier expiré.</p>
+          }
+        </div>
+      } @else {
+        <ul class="file-list">
+          @for (file of files(); track file.id) {
+            <li class="file-row" [class.file-row--expired]="file.expired">
+              <app-icon name="file" [size]="20" />
+              <div class="file-row__text">
+                <span class="file-row__name" [title]="file.originalName">{{ file.originalName }}</span>
+                <span class="file-row__meta" [class.file-row__meta--expired]="file.expired">
+                  {{ expiryLabel(file.expiresAt) }} · {{ formatSize(file.sizeBytes) }}
+                </span>
+              </div>
+              @if (file.expired) {
+                <span class="file-row__gone">Ce fichier a expiré, il n'est plus stocké chez nous</span>
+              } @else {
+                <div class="file-row__actions">
+                  @if (file.passwordProtected) {
+                    <span class="file-row__lock" title="Protégé par mot de passe">
+                      <app-icon name="lock" [size]="16" />
+                      <span class="visually-hidden">Protégé par mot de passe</span>
+                    </span>
+                  }
+                  <button type="button" class="btn btn--soft btn--sm" (click)="askDelete(file)"
+                          [attr.aria-label]="'Supprimer ' + file.originalName">
+                    <app-icon name="trash" [size]="15" />
+                    Supprimer
+                  </button>
+                  <a class="btn btn--soft btn--sm" [href]="file.downloadUrl" target="_blank" rel="noopener"
+                     [attr.aria-label]="'Accéder à la page de téléchargement de ' + file.originalName">
+                    Accéder
+                    <app-icon name="arrow" [size]="15" />
+                  </a>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </main>
+  </div>
+
+  @if (menuOpen()) {
+    <div class="space__backdrop" (click)="menuOpen.set(false)" aria-hidden="true"></div>
+  }
+</div>
+
+<dialog #confirm class="dialog" aria-labelledby="confirm-title" (cancel)="toDelete.set(null)">
+  <h2 id="confirm-title" class="dialog__title">Supprimer ce fichier ?</h2>
+  <p>
+    « {{ toDelete()?.originalName }} » sera supprimé définitivement et son lien ne fonctionnera plus.
+  </p>
+  <div class="dialog__actions">
+    <button type="button" class="btn btn--ghost" (click)="closeDialog()">Annuler</button>
+    <button type="button" class="btn btn--danger" (click)="confirmDelete()" [disabled]="deleting()">
+      {{ deleting() ? 'Suppression…' : 'Supprimer définitivement' }}
+    </button>
+  </div>
+</dialog>
