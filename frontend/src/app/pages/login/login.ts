@@ -26,6 +26,11 @@ export class Login {
   protected readonly error = signal<string | null>(null);
   protected readonly info = signal<string | null>(this.initialInfo());
 
+  /**
+   * Valide le formulaire puis appelle l'API. Après connexion, renvoie vers la page demandée au départ
+   * (`returnUrl`) ; seules les adresses internes, commençant par « / », sont acceptées pour éviter
+   * une redirection vers un site extérieur.
+   */
   protected submit(): void {
     this.submitted.set(true);
     this.error.set(null);
@@ -46,11 +51,13 @@ export class Login {
     });
   }
 
+  /** Une erreur ne s'affiche qu'après que l'utilisateur a quitté le champ ou tenté de valider. */
   protected invalid(name: 'email' | 'password'): boolean {
     const control = this.form.controls[name];
     return control.invalid && (control.touched || this.submitted());
   }
 
+  /** Message d'information selon la provenance : session expirée ou compte tout juste créé. */
   private initialInfo(): string | null {
     const params = this.route.snapshot.queryParamMap;
     if (params.get('expired')) {

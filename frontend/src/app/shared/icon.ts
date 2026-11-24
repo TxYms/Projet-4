@@ -34,6 +34,7 @@ const PATHS: Record<string, string> = {
   `,
 })
 export class Icon {
+  /** Nom de l'icône, parmi les clés de `PATHS`. Un nom inconnu n'affiche rien. */
   readonly name = input.required<string>();
   readonly size = input(18);
   readonly stroke = input(1.8);

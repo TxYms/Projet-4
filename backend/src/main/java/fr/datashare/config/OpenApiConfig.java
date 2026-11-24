@@ -7,9 +7,14 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Description générale de l'API pour la documentation OpenAPI (Swagger UI sur {@code /api/docs/ui}).
+ * Le détail des routes est généré à partir des annotations des contrôleurs.
+ */
 @Configuration
 public class OpenApiConfig {
 
+    /** Nom du schéma de sécurité, référencé par {@code @SecurityRequirement} dans les contrôleurs. */
     public static final String BEARER = "bearerAuth";
 
     @Bean

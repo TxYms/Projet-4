@@ -15,7 +15,12 @@ import { Icon } from '../../shared/icon';
 
 type Step = 'idle' | 'form' | 'uploading' | 'done';
 
-/** US01 : téléverser un fichier et obtenir son lien de téléchargement. */
+/**
+ * US01 : téléverser un fichier et obtenir son lien de téléchargement.
+ *
+ * La page enchaîne quatre étapes (`step`) : accueil avec le bouton rond, formulaire, envoi en cours
+ * avec barre de progression, puis affichage du lien.
+ */
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,6 +64,7 @@ export class Home {
     this.picker().nativeElement.click();
   }
 
+  /** Fichier choisi dans la fenêtre de sélection. Le champ est vidé pour pouvoir choisir deux fois le même fichier. */
   protected onPicked(event: Event): void {
     const input = event.target as HTMLInputElement;
     const picked = input.files?.[0];
@@ -68,6 +74,7 @@ export class Home {
     }
   }
 
+  /** Fichier glissé-déposé sur la zone d'accueil ; un visiteur non connecté est envoyé vers la connexion. */
   protected onDrop(event: DragEvent): void {
     event.preventDefault();
     this.dragging.set(false);
@@ -91,6 +98,10 @@ export class Home {
     this.picker().nativeElement.click();
   }
 
+  /**
+   * Envoie le fichier. La souscription est conservée pour permettre l'annulation, et coupée
+   * automatiquement si l'utilisateur quitte la page (`takeUntilDestroyed`).
+   */
   protected submit(): void {
     const file = this.file();
     if (!file || this.fileProblem() || this.form.invalid) {
@@ -122,11 +133,13 @@ export class Home {
       });
   }
 
+  /** Annule l'envoi en cours : se désabonner interrompt la requête HTTP. */
   protected cancel(): void {
     this.upload?.unsubscribe();
     this.step.set('form');
   }
 
+  /** Copie le lien dans le presse-papiers ; en cas de refus du navigateur, invite à le copier à la main. */
   protected async copy(link: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(link);
@@ -151,6 +164,7 @@ export class Home {
     return control.invalid && control.touched;
   }
 
+  /** Prépare le formulaire pour un nouveau fichier et affiche tout de suite une éventuelle erreur de saisie. */
   private select(file: File): void {
     this.reset();
     this.file.set(file);

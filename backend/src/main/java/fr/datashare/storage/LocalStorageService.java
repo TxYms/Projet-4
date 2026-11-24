@@ -20,14 +20,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class LocalStorageService implements StorageService {
 
+    /** Seules les clés faites de lettres, chiffres et tirets sont acceptées : ni « / », ni « .. ». */
     private static final Pattern SAFE_KEY = Pattern.compile("[A-Za-z0-9-]{1,100}");
     private final Path root;
 
+    /**
+     * @param properties fournit le dossier racine ({@code datashare.storage.root-dir}), créé s'il n'existe pas
+     * @throws IOException si le dossier ne peut pas être créé : l'application refuse alors de démarrer
+     */
     public LocalStorageService(DatashareProperties properties) throws IOException {
         this.root = Path.of(properties.storage().rootDir()).toAbsolutePath().normalize();
         Files.createDirectories(root);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Le contenu est d'abord écrit dans un fichier temporaire, puis renommé en une seule opération :
+     * un téléversement interrompu ne laisse jamais un fichier à moitié écrit sous sa clé définitive.
+     */
     @Override
     public long store(String key, InputStream content) throws IOException {
         Path target = resolve(key);
@@ -37,6 +48,7 @@ public class LocalStorageService implements StorageService {
             Files.move(tmp, target, StandardCopyOption.ATOMIC_MOVE);
             return written;
         } finally {
+            // Sans effet si le renommage a réussi ; nettoie le fichier temporaire en cas d'erreur.
             Files.deleteIfExists(tmp);
         }
     }
@@ -55,6 +67,11 @@ public class LocalStorageService implements StorageService {
         Files.deleteIfExists(resolve(key));
     }
 
+    /**
+     * Transforme une clé en chemin à l'intérieur du dossier de stockage.
+     *
+     * @throws IllegalArgumentException si la clé pourrait désigner un fichier hors du dossier
+     */
     private Path resolve(String key) {
         if (key == null || !SAFE_KEY.matcher(key).matches()) {
             throw new IllegalArgumentException("Clé de stockage invalide");

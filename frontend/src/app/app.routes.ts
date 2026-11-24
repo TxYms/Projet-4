@@ -1,6 +1,11 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './core/auth.guard';
 
+/**
+ * Routes de l'application. Chaque page est chargée à la demande (`loadComponent`) : un destinataire
+ * qui ouvre un lien de téléchargement ne télécharge pas le code de l'espace personnel.
+ * Les gardes protègent l'espace personnel et évitent d'afficher la connexion à un utilisateur déjà connecté.
+ */
 export const routes: Routes = [
   { path: '', title: 'DataShare', loadComponent: () => import('./pages/home/home').then((m) => m.Home) },
   {

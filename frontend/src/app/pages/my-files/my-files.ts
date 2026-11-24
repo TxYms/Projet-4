@@ -7,7 +7,10 @@ import { expiryLabel, formatSize } from '../../core/format';
 import { FileStatusFilter, StoredFile } from '../../core/models';
 import { Icon } from '../../shared/icon';
 
-/** US05 (historique) et US06 (suppression). */
+/**
+ * Espace personnel : historique (US05) et suppression (US06).
+ * La suppression passe par une boîte de dialogue native (`<dialog>`), accessible au clavier et aux lecteurs d'écran.
+ */
 @Component({
   selector: 'app-my-files',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +44,7 @@ export class MyFiles implements OnInit {
     this.load();
   }
 
+  /** Change d'onglet et recharge la liste filtrée depuis l'API. */
   protected select(filter: FileStatusFilter): void {
     this.filter.set(filter);
     this.load();
@@ -56,6 +60,7 @@ export class MyFiles implements OnInit {
     this.toDelete.set(null);
   }
 
+  /** Supprime le fichier choisi ; la ligne est retirée de la liste sans recharger toute la page. */
   protected confirmDelete(): void {
     const file = this.toDelete();
     if (!file) {

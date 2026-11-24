@@ -27,11 +27,13 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /** Erreurs métier levées volontairement par les services : statut, code et message déjà prêts. */
     @ExceptionHandler(ApiException.class)
     ProblemDetail handleApi(ApiException ex) {
         return problem(ex.getStatus(), ex.getCode(), ex.getMessage());
     }
 
+    /** Échec de Bean Validation sur un corps JSON : renvoie un message par champ, dans {@code errors}. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         ProblemDetail pd = problem(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Certains champs sont invalides.");
@@ -43,17 +45,23 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    /** Fichier refusé par Spring avant même d'atteindre le contrôleur (limite {@code max-file-size}). */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     ProblemDetail handleTooLarge(MaxUploadSizeExceededException ex) {
         return problem(HttpStatus.CONTENT_TOO_LARGE, "FILE_TOO_LARGE", "Le fichier dépasse la taille maximale de 1 Go.");
     }
 
+    /** Requête mal construite (paramètre manquant, JSON illisible, filtre inconnu…) : 400 générique. */
     @ExceptionHandler({MissingServletRequestPartException.class, MissingServletRequestParameterException.class,
             MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class, MultipartException.class})
     ProblemDetail handleBadRequest(Exception ex) {
         return problem(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "La requête est mal formée.");
     }
 
+    /**
+     * Filet de sécurité pour toute erreur imprévue : la trace complète est écrite dans le journal du serveur,
+     * le client ne reçoit qu'un message générique.
+     */
     @ExceptionHandler(Exception.class)
     ProblemDetail handleUnexpected(Exception ex) {
         log.error("Erreur inattendue", ex);
@@ -61,6 +69,7 @@ public class GlobalExceptionHandler {
                 "Une erreur inattendue est survenue. Réessayez plus tard.");
     }
 
+    /** Construit une réponse Problem Details enrichie du champ {@code code}, que le front utilise pour réagir. */
     private static ProblemDetail problem(HttpStatus status, String code, String message) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(status, message);
         pd.setType(URI.create("https://datashare.fr/errors/" + code.toLowerCase().replace('_', '-')));

@@ -3,6 +3,7 @@
 const UNITS = ['octets', 'Ko', 'Mo', 'Go'];
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** Taille lisible en unités françaises : « 512 octets », « 2,6 Mo », « 1 Go ». */
 export function formatSize(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} ${bytes > 1 ? 'octets' : 'octet'}`;
@@ -52,6 +53,7 @@ export function expirySentence(expiresAt: string, now: Date = new Date()): strin
   return `Ce fichier expirera dans ${days} jours.`;
 }
 
+/** Choix proposés dans la liste « Expiration » du formulaire de téléversement (1 à 7 jours). */
 export const EXPIRATION_OPTIONS: ReadonlyArray<{ days: number; label: string }> = [
   { days: 1, label: 'Une journée' },
   { days: 2, label: 'Deux jours' },
@@ -62,6 +64,7 @@ export const EXPIRATION_OPTIONS: ReadonlyArray<{ days: number; label: string }> 
   { days: 7, label: 'Une semaine' },
 ];
 
+/** Durée en toutes lettres pour le message de confirmation : « une journée », « une semaine »… */
 export function durationLabel(days: number): string {
   return EXPIRATION_OPTIONS.find((o) => o.days === days)?.label.toLowerCase() ?? `${days} jours`;
 }

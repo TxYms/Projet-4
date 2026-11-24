@@ -16,6 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Points d'entrée REST de l'authentification, sous {@code /api/auth}.
+ *
+ * <p>Le contrôleur ne contient aucune règle métier : il valide le corps de la requête ({@code @Valid})
+ * et délègue à {@link AuthService}. Les erreurs sont converties en réponses JSON par
+ * {@code GlobalExceptionHandler}.
+ *
+ * <p>{@code /register} et {@code /login} sont publics ; {@code /me} exige un jeton (voir {@code SecurityConfig}).
+ */
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentification", description = "Création de compte et connexion (US03, US04)")
@@ -27,6 +36,11 @@ public class AuthController {
         this.authService = authService;
     }
 
+    /**
+     * {@code POST /api/auth/register} : crée un compte (US03).
+     *
+     * @return 201 avec le compte créé ; 400 si la saisie est invalide ; 409 si l'e-mail est déjà utilisé
+     */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer un compte")
@@ -34,12 +48,23 @@ public class AuthController {
         return authService.register(request);
     }
 
+    /**
+     * {@code POST /api/auth/login} : connecte l'utilisateur (US04).
+     *
+     * @return 200 avec le jeton d'accès ; 401 si les identifiants sont incorrects
+     */
     @PostMapping("/login")
     @Operation(summary = "Se connecter et obtenir un jeton d'accès JWT")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 
+    /**
+     * {@code GET /api/auth/me} : profil de l'utilisateur connecté.
+     *
+     * @param jwt jeton d'accès déjà vérifié par Spring Security et injecté ici
+     * @return 200 avec le profil ; 401 sans jeton valide
+     */
     @GetMapping("/me")
     @Operation(summary = "Utilisateur connecté", security = @SecurityRequirement(name = OpenApiConfig.BEARER))
     public UserResponse me(@AuthenticationPrincipal Jwt jwt) {
