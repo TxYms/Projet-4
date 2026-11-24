@@ -6,6 +6,10 @@ export const MAX_FILE_SIZE = 1024 * 1024 * 1024;
 export const MIN_FILE_PASSWORD = 6;
 export const FORBIDDEN_EXTENSIONS = ['exe', 'bat', 'cmd', 'com', 'msi', 'scr', 'ps1', 'vbs', 'jar', 'sh', 'dll'];
 
+/**
+ * Vérifie un fichier dès qu'il est choisi.
+ * @returns le message à afficher sous le fichier, ou `null` s'il est acceptable
+ */
 export function fileError(file: File): string | null {
   if (file.size === 0) {
     return 'Ce fichier est vide.';

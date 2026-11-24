@@ -4,7 +4,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/** US03 : e-mail valide et mot de passe d'au moins 8 caractères. */
+/**
+ * Corps de {@code POST /api/auth/register} (US03) : e-mail valide et mot de passe d'au moins 8 caractères.
+ * La limite de 72 caractères correspond à la longueur maximale prise en compte par BCrypt.
+ */
 public record RegisterRequest(
         @NotBlank(message = "L'e-mail est obligatoire.")
         @Email(message = "Le format de l'e-mail est invalide.")

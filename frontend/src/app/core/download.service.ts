@@ -3,10 +3,15 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { DownloadInfo } from './models';
 
+/**
+ * Appels publics de la page de téléchargement (US02). Aucun jeton n'est envoyé :
+ * le destinataire n'a pas de compte.
+ */
 @Injectable({ providedIn: 'root' })
 export class DownloadService {
   private readonly http = inject(HttpClient);
 
+  /** Nom, taille, date d'expiration et protection du fichier ; échoue en 404 (lien inconnu) ou 410 (expiré). */
   info(token: string): Observable<DownloadInfo> {
     return this.http.get<DownloadInfo>(`/api/download/${encodeURIComponent(token)}`);
   }

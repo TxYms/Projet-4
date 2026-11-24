@@ -22,15 +22,27 @@ public record DatashareProperties(
         Files files,
         Purge purge) {
 
+    /** @param allowedOrigins origines autorisées à appeler l'API depuis un navigateur */
     public record Cors(List<String> allowedOrigins) {
     }
 
+    /**
+     * @param secret            clé de signature en Base64 (au moins 32 octets), fournie par {@code JWT_SECRET}
+     * @param accessTokenTtl    durée de validité des jetons d'accès
+     * @param downloadTicketTtl durée de validité des tickets de téléchargement
+     */
     public record Jwt(@NotBlank String secret, Duration accessTokenTtl, Duration downloadTicketTtl) {
     }
 
+    /** @param rootDir dossier où sont écrits les contenus des fichiers */
     public record Storage(@NotBlank String rootDir) {
     }
 
+    /**
+     * @param defaultExpirationDays durée proposée par défaut au téléversement
+     * @param maxExpirationDays     durée maximale autorisée (7 jours d'après les spécifications)
+     * @param forbiddenExtensions   extensions refusées au téléversement, modifiables sans recompiler
+     */
     public record Files(@Min(1) int defaultExpirationDays, @Min(1) int maxExpirationDays,
                         List<String> forbiddenExtensions) {
 
@@ -44,6 +56,10 @@ public record DatashareProperties(
         }
     }
 
+    /**
+     * @param cron              planification de la purge (expression cron Spring, « - » pour la désactiver)
+     * @param metadataRetention durée pendant laquelle un fichier expiré reste visible dans l'historique
+     */
     public record Purge(String cron, Duration metadataRetention) {
     }
 }

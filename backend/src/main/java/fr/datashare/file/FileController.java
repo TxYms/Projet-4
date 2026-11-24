@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Points d'entrée REST de l'espace personnel, sous {@code /api/files}.
+ *
+ * <p>Toutes les routes exigent un jeton d'accès. L'identifiant de l'utilisateur est toujours lu dans
+ * le jeton, jamais dans la requête : un utilisateur ne peut donc pas agir au nom d'un autre.
+ */
 @RestController
 @RequestMapping("/api/files")
 @Tag(name = "Mes fichiers", description = "Téléversement, historique et suppression (US01, US05, US06)")
@@ -35,6 +41,14 @@ public class FileController {
         this.fileService = fileService;
     }
 
+    /**
+     * {@code POST /api/files} : téléverse un fichier (US01).
+     *
+     * @param file           partie {@code file} du formulaire multipart
+     * @param password       mot de passe optionnel
+     * @param expirationDays durée de validité, 7 jours par défaut
+     * @return 201 avec le lien ; 400 si une règle n'est pas respectée ; 413 au-delà de 1 Go
+     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Téléverser un fichier (1 Go maximum)")
@@ -47,6 +61,11 @@ public class FileController {
         return fileService.upload(CurrentUser.idOf(jwt), file, password, expirationDays);
     }
 
+    /**
+     * {@code GET /api/files?status=ALL|ACTIVE|EXPIRED} : historique des envois (US05).
+     *
+     * @return 200 avec la liste, du plus récent au plus ancien
+     */
     @GetMapping
     @Operation(summary = "Historique des fichiers envoyés, du plus récent au plus ancien")
     public List<FileResponse> history(@AuthenticationPrincipal Jwt jwt,
@@ -54,6 +73,11 @@ public class FileController {
         return fileService.history(CurrentUser.idOf(jwt), status);
     }
 
+    /**
+     * {@code DELETE /api/files/{id}} : suppression définitive (US06).
+     *
+     * @return 204 si supprimé ; 404 si le fichier n'existe pas ou appartient à un autre utilisateur
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Supprimer définitivement un fichier")

@@ -11,8 +11,10 @@ import { AuthService } from '../../core/auth.service';
 import { toProblem } from '../../core/api-error';
 import { GradientShell } from '../../layout/gradient-shell';
 
+/** Longueur minimale du mot de passe d'un compte, identique à celle exigée par l'API (US03). */
 export const MIN_ACCOUNT_PASSWORD = 8;
 
+/** Validateur de groupe : signale une erreur `mismatch` si les deux mots de passe saisis diffèrent. */
 function passwordsMatch(group: AbstractControl): ValidationErrors | null {
   const password = group.get('password')?.value as string;
   const confirm = group.get('confirm')?.value as string;
@@ -43,6 +45,7 @@ export class Register {
   protected readonly pending = signal(false);
   protected readonly error = signal<string | null>(null);
 
+  /** Crée le compte puis connecte automatiquement l'utilisateur, pour lui éviter une saisie de plus. */
   protected submit(): void {
     this.submitted.set(true);
     this.error.set(null);

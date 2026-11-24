@@ -4,7 +4,12 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
-/** Ajoute le jeton aux appels de l'API et renvoie vers la connexion si la session a expiré. */
+/**
+ * Ajoute le jeton aux appels de l'API et renvoie vers la connexion si la session a expiré.
+ *
+ * Le jeton n'est jamais envoyé aux routes publiques (connexion, inscription, téléchargement),
+ * ni à un autre domaine que l'API : il ne peut pas fuiter vers un service tiers.
+ */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -19,6 +24,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(request).pipe(
     catchError((error: unknown) => {
+      // 401 sur une route protégée : le jeton a expiré ou a été refusé, on renvoie vers la connexion.
+      // L'erreur est quand même transmise, pour que la page appelante arrête son chargement.
       if (error instanceof HttpErrorResponse && error.status === 401 && isApi && !isPublic) {
         auth.expire(router.url);
       }

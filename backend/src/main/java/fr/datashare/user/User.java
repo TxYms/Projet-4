@@ -7,6 +7,10 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Compte utilisateur (table {@code users}).
+ * L'e-mail est stocké normalisé en minuscules ; le mot de passe uniquement sous forme de hachage BCrypt.
+ */
 @Entity
 @Table(name = "users")
 public class User {

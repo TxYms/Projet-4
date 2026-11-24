@@ -12,7 +12,12 @@ type State =
   | { kind: 'ready'; info: DownloadInfo }
   | { kind: 'unavailable'; message: string };
 
-/** US02 : page publique ouverte par le destinataire du lien. */
+/**
+ * US02 : page publique ouverte par le destinataire du lien (`/d/:token`).
+ *
+ * L'état de la page est un seul signal à trois valeurs (chargement, prêt, indisponible) :
+ * le modèle HTML ne peut donc jamais afficher deux états contradictoires.
+ */
 @Component({
   selector: 'app-download',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +39,7 @@ export class Download implements OnInit {
     password: ['', [Validators.required]],
   });
 
+  /** Charge les métadonnées dès l'ouverture ; un 404 reçoit un message plus parlant que celui de l'API. */
   ngOnInit(): void {
     this.downloads.info(this.token()).subscribe({
       next: (info) => this.state.set({ kind: 'ready', info }),
@@ -51,10 +57,15 @@ export class Download implements OnInit {
     return expirySentence(info.expiresAt);
   }
 
+  /** Vrai si le fichier expire aujourd'hui ou demain : le bandeau passe alors en orange. */
   protected soon(info: DownloadInfo): boolean {
     return daysLeft(info.expiresAt) <= 1;
   }
 
+  /**
+   * Lance le téléchargement. Fichier protégé : vérifie d'abord le mot de passe auprès de l'API,
+   * qui renvoie un ticket ; le mot de passe n'apparaît ainsi jamais dans l'URL.
+   */
   protected download(info: DownloadInfo): void {
     this.error.set(null);
     if (!info.passwordProtected) {
